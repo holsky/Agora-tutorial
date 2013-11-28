@@ -1,0 +1,15 @@
+extends ../../../views/layout
+
+include ./mailheader-mixin
+
+
+block title
+  | #{group} mails 
+
+block content
+  .row
+    .col-md-12
+      .page-header
+        mixin pageHeader(group, "Flat")
+      .panel.pre-scrollable
+        mixin mailIndex(mailHeaders)

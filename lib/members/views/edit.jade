@@ -1,0 +1,74 @@
+extends ../../../views/layout
+
+include  ../../../views/formComponents
+
+block scripts
+  script(src="/clientscripts/check-memberform.js")
+
+
+block title
+  | Profil&nbsp;
+  - if (accessrights.isRegistered())
+    | bearbeiten
+  - else
+    | anlegen
+
+block content
+  form(id='memberform', action='/members/submit',method='post')
+    fieldset
+      .row
+        .col-md-12
+          
+          h2 
+            if (accessrights.isRegistered())
+              | "#{member.nickname}"
+            else
+              | Neues Mitglied
+            .btn-group.pull-right
+              if (accessrights.isRegistered())
+                if (accessrights.isMember(member))
+                  a.btn.btn-default(href="/auth/logout", type="cancel") Abmelden
+                a.btn.btn-default(href="javascript:history.back()", type="cancel") Zurück
+              else
+                a.btn.btn-danger(href="/auth/logout", type="cancel") Registrierung abbrechen
+              button.btn.btn-primary(type="submit") Speichern
+
+      .row
+        .col-md-12
+          legend Gruppenmitgliedschaft
+          mixin groupCheckboxes('newSubscriptions', regionalgroups, themegroups)
+      .row
+        .col-md-12
+          legend Persönliche Daten
+      .row
+        .col-md-6
+          mixin hidden('id', member)
+          mixin hidden('previousNickname', member, 'nickname')
+          mixin hiddenWithValue('previousEmail', accessrights.isRegistered() ? member.email : '')
+          mixin hidden('created', member)
+          mixin text('nickname', 'Nickname', member)
+          mixin text('firstname', 'Vorname', member)
+          mixin text('lastname', 'Nachname', member)
+          mixin text('email', 'Email', member)
+          mixin twitter('twitter', 'Twitter', member)
+        .col-md-6
+          mixin text('location', 'Ort / Region', member)
+          mixin text('profession', 'Beruf', member)
+          mixin text('interests', 'Interessenschwerpunkte', member)
+          mixin text('site', 'Website / Blog', member)
+          mixin text('reference', 'Wie ich von der Softwerkskammer erfahren habe', member)
+          if (accessrights.isAdmin())
+            mixin checkbox('isAdmin', 'Administrator', !!member.isAdmin)
+      if (accessrights.isRegistered())
+        .row
+          .col-md-12
+            legend Aktuell authentifiziert bei:
+            ul
+              each auth in member.authentications
+                li #{auth}
+        if (accessrights.isMember(member))
+          .row
+            .col-md-6
+              a.btn.btn-primary(data-toggle="modal", href="#login")
+                i.fa.fa-plus-square.fa-fw
+                | &nbsp;Anderswo authentifizieren

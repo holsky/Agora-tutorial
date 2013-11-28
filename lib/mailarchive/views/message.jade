@@ -1,0 +1,17 @@
+include ./mailheader-mixin
+
+doctype 5
+html
+  .modal-dialog.cheatsheet
+    .modal-content
+      .modal-header
+        button.close(type="button", data-dismiss="modal", aria-hidden="true") schließen&nbsp;&times
+        if (!mail)
+          h3 Keine Mail vorhanden
+        else
+          h3 #{mail.subject}
+            br
+            small: mixin mailattributes(mail) 
+      .modal-body
+        if (mail)
+          !{mail.getHtml()}
